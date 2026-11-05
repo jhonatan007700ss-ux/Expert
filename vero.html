@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vero Expert — Suporte N1</title>
+<style>
+  :root {
+    --pink: #E6007E;
+    --pink-dark: #C2006A;
+    --pink-light: #FCE4F0;
+    --dark: #14121F;
+    --dark2: #1B1830;
+    --text: #1F2430;
+    --muted: #6B7280;
+    --bg: #F5F6FA;
+    --card-border: #ECEBF3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+  }
+  /* ---------------- SIDEBAR ---------------- */
+  #sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: linear-gradient(180deg, #17142A 0%, #0D0B16 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  #sidebar .logo-box {
+    padding: 28px 24px 18px 24px;
+  }
+  #sidebar .logo-box img { height: 26px; display: block; }
+  #sidebar .logo-box .subtitle {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--pink);
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  #sidebar nav { padding: 10px 14px; z-index: 2; }
+  #sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #C7C4D6;
+    text-decoration: none;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: 14.5px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  #sidebar nav a:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  #sidebar nav a.active { background: var(--pink); color: #fff; font-weight: 600; }
+  #sidebar nav a .ic { width: 19px; height: 19px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  #sidebar nav a .ic svg { width: 18px; height: 18px; }
+  #sidebar .art {
+    flex: 1;
+    position: relative;
+    min-height: 220px;
+  }
+  #sidebar .art svg { position: absolute; bottom: 0; left: 0; width: 100%; }
+  #sidebar .user-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 18px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.25);
+    z-index: 2;
+  }
+  #sidebar .user-box .avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--pink);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff;
+  }
+  #sidebar .user-box .name { font-size: 13.5px; font-weight: 600; color: #fff; }
+  #sidebar .user-box .role { font-size: 11.5px; color: #9C98AE; }
+
+  /* ---------------- MAIN ---------------- */
+  #main { flex: 1; padding: 34px 40px; overflow-y: auto; }
+  .greeting { color: var(--pink); font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  h1.title { font-size: 28px; margin: 0 0 6px 0; color: var(--text); }
+  .subtext { color: var(--muted); font-size: 14.5px; margin-bottom: 22px; }
+
+  .section-title {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--pink); font-weight: 700; font-size: 13px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    border-bottom: 2px solid var(--pink-light);
+    padding-bottom: 10px; margin: 30px 0 18px 0;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .proc-card {
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 22px;
+    cursor: pointer;
+    transition: box-shadow .15s, transform .15s;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .proc-card:hover { box-shadow: 0 8px 24px rgba(230,0,126,0.12); transform: translateY(-2px); }
+  .proc-card .card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom: 14px; }
+  .proc-card .icon-circle {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--pink-light); color: var(--pink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 19px;
+  }
+  .status-badge {
+    display:inline-flex; align-items:center; gap:5px;
+    font-size: 11.5px; font-weight: 700; padding: 4px 10px 4px 8px;
+    border-radius: 20px; white-space: nowrap;
+  }
+  .status-badge.done { background: #E4F7EC; color: #1E9A5A; }
+  .status-badge.pending { background: #FDEAEA; color: #E0483E; }
+  .status-badge .dot { width:6px; height:6px; border-radius:50%; background: currentColor; display:inline-block; }
+  .proc-card .fav-btn {
+    position: absolute; top: 18px; right: 18px;
+    background: none; border: none; cursor: pointer;
+    font-size: 17px; color: #D8D6E5;
+  }
+  .proc-card .fav-btn.active { color: #F5B301; }
+  .proc-card h3 { font-size: 16.5px; margin: 0 0 6px 0; }
+  .proc-card p { font-size: 13.2px; color: var(--muted); margin: 0 0 16px 0; line-height: 1.4; flex: 1; }
+  .proc-card .start-link { color: var(--pink); font-weight: 700; font-size: 13.5px; }
+
+  /* -------- Header hero (phone mockup) -------- */
+  .home-header { position: relative; min-height: 190px; }
+  .home-header .greeting, .home-header h1.title, .home-header .subtext { max-width: 620px; }
+  .hero-graphic { position: absolute; top: -10px; right: 0; width: 300px; height: 200px; pointer-events: none; }
+  .hero-logo { position: absolute; top: 4px; right: 0; height: 24px; width: auto; }
+  @media (max-width: 1100px) { .hero-graphic { display: none; } }
+
+  .nicho-card .nicho-icon { width: 52px; height: 52px; font-size: 24px; }
+  .nicho-card h3 { font-size: 18px; }
+  .nicho-card p { font-size: 13.5px; }
+  .nicho-empty { cursor: default; opacity: 0.75; }
+  .nicho-empty:hover { box-shadow:none; transform:none; }
+
+  .tip-bar {
+    margin-top: 30px;
+    background: var(--pink-light);
+    border-radius: 14px;
+    padding: 16px 22px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    font-size: 13.8px; color: #7A2050;
+  }
+  .tip-bar button {
+    background: #fff; border: 1px solid var(--pink);
+    color: var(--pink); border-radius: 10px;
+    padding: 9px 16px; font-weight: 600; font-size: 13px; cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .escalation-banner {
+    margin-top: 26px;
+    background: #FFF6E5;
+    border: 1px solid #F6D98A;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13.3px;
+    color: #7A5B00;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+
+  /* -------- Diagnostic flow -------- */
+  .breadcrumb { font-size: 13px; color: var(--pink); cursor: pointer; margin-bottom: 14px; display:inline-block; }
+  .flow-card {
+    background: #fff; border: 1px solid var(--card-border); border-radius: 16px;
+    padding: 30px; max-width: 720px;
+  }
+  .flow-card .proc-name { font-size: 12.5px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px;}
+  .flow-card h2 { font-size: 20px; margin: 0 0 22px 0; line-height:1.4; }
+  .option-btn {
+    display:block; width: 100%; text-align: left;
+    background: #FAFAFC; border: 1.5px solid var(--card-border);
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;
+    font-size: 14.5px; cursor: pointer; transition: all .15s;
+    color: var(--text);
+  }
+  .option-btn:hover { border-color: var(--pink); background: var(--pink-light); color: var(--pink-dark); }
+
+  .diag-card { background:#fff; border:1px solid var(--card-border); border-radius:16px; padding: 30px; max-width: 760px; }
+  .diag-card .badge { display:inline-block; background: var(--pink-light); color: var(--pink); font-size:11.5px; font-weight:700; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; letter-spacing:.4px; }
+  .diag-card h2 { font-size: 21px; margin: 0 0 18px 0; }
+  .diag-block { margin-bottom: 18px; }
+  .diag-block .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 700; margin-bottom: 5px; }
+  .diag-block .value { font-size: 14.3px; line-height: 1.55; color: var(--text); }
+  .chip-row { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { background: #F1F0F8; color: #4C4870; font-size: 12.5px; font-weight:600; padding: 5px 12px; border-radius: 20px; }
+  .mat-link { display:block; font-size: 13.8px; color: var(--pink); text-decoration:none; margin-bottom:6px; font-weight:600;}
+  .sla-box { background:#FFF6E5; border:1px solid #F6D98A; border-radius: 10px; padding: 12px 16px; font-size: 13.3px; color:#7A5B00; }
+  .diag-actions { margin-top: 24px; display:flex; gap:10px; }
+  .btn-primary { background: var(--pink); color:#fff; border:none; border-radius:10px; padding: 11px 20px; font-weight:600; font-size:13.6px; cursor:pointer; }
+  .btn-secondary { background:#fff; color: var(--pink); border:1.5px solid var(--pink); border-radius:10px; padding: 11px 20px; font-weight:600; font-size:13.6px; cursor:pointer; }
+
+  .checklist-box { background:#FAFAFD; border:1px solid var(--card-border); border-radius: 12px; padding: 18px 20px; margin-top: 6px; }
+  .checklist-box-header { display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px; gap: 10px; }
+  .checklist-box-header .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 700; }
+  .checklist-pre { white-space: pre-wrap; font-family: 'Segoe UI', Arial, sans-serif; font-size: 13.3px; line-height: 1.6; color: var(--text); margin: 0; max-height: 340px; overflow-y: auto; }
+  .btn-copy { background: var(--pink); color:#fff; border:none; border-radius:9px; padding: 8px 16px; font-weight:600; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:6px; white-space:nowrap; transition: background .15s; }
+  .btn-copy:hover { background: var(--pink-dark); }
+  .btn-copy.copied { background: #1C9C5B; }
+
+  /* -------- Knowledge base -------- */
+  .kb-search { width:100%; max-width: 480px; padding: 12px 16px; border-radius: 12px; border: 1.5px solid var(--card-border); font-size: 14px; margin-bottom: 22px; }
+  .kb-item { background:#fff; border:1px solid var(--card-border); border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; cursor:pointer; }
+  .kb-item:hover { border-color: var(--pink); }
+  .kb-item .kb-proc { font-size: 11.5px; color: var(--pink); font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
+  .kb-item .kb-title { font-size: 15px; font-weight:600; margin-top:3px; }
+
+  .empty-state { color: var(--muted); font-size: 14px; padding: 30px 0; }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="logo-box">
+    <img src="data:image/png;base64,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" alt="Vero">
+    <div class="subtitle">EXPERT</div>
+  </div>
+  <nav>
+    <a data-view="home" class="active"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1v-9"/></svg></span> Início</a>
+    <a data-view="diagnosticos"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span> Diagnósticos</a>
+    <a data-view="history"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span> Histórico</a>
+    <a data-view="favorites"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5 14.5 9l6 .8-4.4 4.1 1.1 6-5.2-2.9-5.2 2.9 1.1-6-4.4-4.1 6-.8Z"/></svg></span> Favoritos</a>
+    <a data-view="kb"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3.5h9.5a1 1 0 0 1 1 1V20l-5.75-3.5L5 20V4.5a1 1 0 0 1 1-1Z"/></svg></span> Base de Conhecimento</a>
+  </nav>
+  <div class="art">
+    <svg viewBox="0 0 260 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="glow" cx="42%" cy="68%" r="55%">
+          <stop offset="0%" stop-color="#E6007E" stop-opacity="0.65"/>
+          <stop offset="60%" stop-color="#5A1050" stop-opacity="0.18"/>
+          <stop offset="100%" stop-color="#E6007E" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="skyline" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3A1440"/>
+          <stop offset="100%" stop-color="#1A0B22"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="260" height="300" fill="url(#glow)"/>
+
+      <!-- signal waves -->
+      <g stroke="#E6007E" fill="none" opacity="0.5">
+        <circle cx="105" cy="118" r="22" stroke-width="1.2"/>
+        <circle cx="105" cy="118" r="38" stroke-width="1" opacity="0.6"/>
+        <circle cx="105" cy="118" r="54" stroke-width="0.8" opacity="0.35"/>
+      </g>
+
+      <!-- city skyline -->
+      <g fill="url(#skyline)" opacity="0.9">
+        <rect x="0" y="255" width="22" height="45"/>
+        <rect x="24" y="235" width="18" height="65"/>
+        <rect x="44" y="260" width="16" height="40"/>
+        <rect x="180" y="250" width="18" height="50"/>
+        <rect x="200" y="230" width="20" height="70"/>
+        <rect x="222" y="265" width="16" height="35"/>
+        <rect x="240" y="245" width="20" height="55"/>
+      </g>
+
+      <!-- antenna tower -->
+      <g stroke="#E6007E" stroke-width="1.6" fill="none" opacity="0.95" stroke-linecap="round">
+        <line x1="105" y1="118" x2="62" y2="300"/>
+        <line x1="105" y1="118" x2="148" y2="300"/>
+        <line x1="82" y1="180" x2="128" y2="180"/>
+        <line x1="74" y1="222" x2="136" y2="222"/>
+        <line x1="68" y1="262" x2="142" y2="262"/>
+        <line x1="88" y1="150" x2="122" y2="150"/>
+      </g>
+      <circle cx="105" cy="118" r="4.5" fill="#E6007E"/>
+      <line x1="105" y1="118" x2="105" y2="100" stroke="#E6007E" stroke-width="1.6"/>
+    </svg>
+  </div>
+  <div class="user-box">
+    <div class="avatar">RS</div>
+    <div>
+      <div class="name">Renata Salazar</div>
+      <div class="role">Analista CX</div>
+    </div>
+  </div>
+</div>
+
+<div id="main"></div>
+
+<script>
+const LOGO_B64 = "/9j/4AAQSkZJRgABAgAAAQABAAD/wAARCABUAIwDACIAAREBAhEB/9sAQwAIBgYHBgUIBwcHCQkICgwUDQwLCwwZEhMPFB0aHx4dGhwcICQuJyAiLCMcHCg3KSwwMTQ0NB8nOT04MjwuMzQy/9sAQwEJCQkMCwwYDQ0YMiEcITIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIy/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMAAAERAhEAPwD33b7UbfanUUAN2+1G32p1FADdvtRt9qdRQA3b7UbfanUUAN2+1G32p1FADdvtRt9qdRQA3b7UbfanUUAN2+1G32p1FADdvtTh0oooAKKKKACiimySJDE8kjBUQFmYngAdTQA6iqOm6xp+sRNLp93HOqnDbTyv1B5FXqByi4u0lZhRUc9xDawPPcSpFEgyzucACq+m6rY6vbG4sLhZ4gxQsuRgjtzQCi2r20LlFYd14y8PWdwYJtUhEinBChmAP1AIrSsdRstTg86yuYp4+hMbZx9fSgp05xipNOzLVFNd0jRnkZURRlmY4AHqaxoPF2g3N/HZQalFJcSHaiqGIJ9N2MfrQKMJT+FXNuimSyxwQvNK4SONSzMegA5JrN03xJo+rzeTY38U0uM7OVYj2BAzQChJptLRGrRRRQSFFFFABRRRQAU10SWNo5FDIwKspGQQe1OooA8u1vTz4B8SWer6Ysg0+c7JYs5A9Uz7jkZ7j2r06GaO4gjmicPFIodGHQgjINZ3iHR49d0O5sHwGdcxsf4XHIP5/oTXCeG/GP8AY3hW/sb0hb7TyUt43PLZONvvtbOfb6UHqz5sZh1PecNH3ae33PT8WS+LLqfxT4ttvDNpIRbQuDcMv97qx/4COPrmneMpYvDGj2nh3RR9nF2xaV9+GI4HLe/c+gxV74b6M8NjNrV1lrm9J2s3XZnk/iefwFU/inpM0sVpqsalooQYpsdVBPB+mcj8RQdVN04Yingr+6vi85frrZWfoTaZ4R8HW1miX17a3dwR87m82jPoArDisrRo7XSPibDaaFc+fZTKVkAfcMbSSM98EA/pTNL8N+CdTtEmXW7iByPminnjRlPccrz9RWz4cufCGja9Hp2kme6vLjKfajh1HfGeOOOoFBrUqOLqKVSU20/d5Wvn5L0IviFd3Wo6zpvhq2fYtwVeQ9iSxAz7DBP5Vv6d4M8P6Esd35AMtuN5uZ5Dxj+IjO0flXPa/wD8la0f/rnH/N67nV7L+0tHvLIEAzwtGCexI4P50Hn1K06OFpQpvlUrt2662Kthax3T3V4L9b2xvFIVAdybehHXHqK5PxV4CsbTTZtU0YSWtxagzFFkJBA5JBJyCMEjFQ+BPEdto0M+g6w4tJoZW2NKcLnupPQc8+hzWr4w8Z6ZbaLc2lndxXN1cRtEBCwYICMEkjjpUxio7FJYnDYpQo67W00kv19enc1fButvr3hyG5mObiMmGU+rDHP4gg/jW/XMeAtJm0jwvElwu2WdzOy91yAAD74Arp6o5MdGnDEzjT2v/wAP+IUUUUHIFFFFABRRRQAVzWqeBdE1bUzfzxypKxBkWJ9qyH3GP5YrpaKDWjXqUZc9N2YyKKOCJIokVI0UKqqMAAdAKWSNJY2jkRXRhhlYZBHoRTqKDNtt3e5x938NPD91O0qC5tgTkpDINv8A48DitbRfCukaCS9lbfviMGaQ7nx9e34VtUUHVPH4mcPZym7f182ZVz4esLvXrbWJVc3Vuu1MN8p64yPbJrVoooOeVSUkot6LYw9c8J6R4gIkvICs4486I7Xx6E9/xqppPgHQtJuFuEhkuJUOUa4YNtPrgAD9K6eig3hjcRCHs4zaX9fNBRRRQcoUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAf//Z";
+const DATA = {"PROCESSOS":[{"id":"PROC101","categoria":"Móvel","processo":"Ativação de Chip","descricao":"Cliente com chip novo ou portado que precisa ativar a linha.","keyword":"Ativar chip, ICCID"},{"id":"PROC102","categoria":"Móvel","processo":"Bloqueio e Desbloqueio de SIM Card","descricao":"Solicitação de bloqueio (roubo, perda, uso indevido) ou desbloqueio do chip.","keyword":"Bloqueio, Desbloqueio, Roubo, Perda"},{"id":"PROC103","categoria":"Móvel","processo":"Sem Dados Móveis (APN)","descricao":"Cliente sem acesso à internet móvel — configuração de APN.","keyword":"Dados móveis, APN, Internet"},{"id":"PROC104","categoria":"Móvel","processo":"Sem Sinal / Busca de Rede","descricao":"Chip sem sinal — busca manual de rede e cobertura.","keyword":"Sem sinal, Rede, Cobertura"},{"id":"PROC105","categoria":"Móvel","processo":"Não Realiza ou Não Recebe Chamadas","descricao":"Falhas em chamadas de voz na linha móvel.","keyword":"Chamada, Voz, Não realiza, Não recebe"},{"id":"PROC106","categoria":"Móvel","processo":"Não Envia ou Não Recebe SMS","descricao":"Falhas de envio/recebimento de SMS e centro de mensagens.","keyword":"SMS, Centro de mensagens"},{"id":"PROC107","categoria":"Móvel","processo":"Portabilidade — Status e Cancelamento","descricao":"Consulta de status, regras e cancelamento de portabilidade (Port In).","keyword":"Portabilidade, Port In, Status"},{"id":"PROC108","categoria":"Móvel","processo":"Envio e Rastreio de Chip","descricao":"Solicitação de envio de chip e consulta de rastreio.","keyword":"Envio de chip, Rastreio, Correios"},{"id":"PROC109","categoria":"Móvel","processo":"Consulta de Consumo e Extrato","descricao":"Consulta de consumo de dados, ligações e SMS.","keyword":"Consumo, Extrato, Saldo"},{"id":"PROC110","categoria":"Móvel","processo":"Pacote Adicional de Dados","descricao":"Venda e suporte de pacote adicional de 3GB e 6GB.","keyword":"Pacote adicional, Gigas"},{"id":"PROC111","categoria":"Móvel","processo":"Chamada a Cobrar e Internacional","descricao":"Liberação e falhas em chamadas a cobrar e internacionais.","keyword":"A cobrar, Internacional"},{"id":"PROC112","categoria":"Móvel","processo":"Roaming Internacional","descricao":"Dúvidas sobre uso do chip fora do Brasil.","keyword":"Roaming"},{"id":"PROC113","categoria":"Móvel","processo":"Falhas em Chamadas (Linha Fixa)","descricao":"Não realiza/recebe, chamada muda, picotada, internacional ou a cobrar na linha fixa.","keyword":"Fixa, Falha, Chamada"},{"id":"PROC114","categoria":"Móvel","processo":"Portabilidade e Verificação de Número (Fixa)","descricao":"Consulta de status de portabilidade e verificação de número antes da inclusão.","keyword":"Portabilidade fixa, Summit, ABR"}],"ARVORE":[{"no":1,"processo":"PROC101","tipo":"Pergunta","texto":"Qual canal o cliente está usando (ou o analista vai usar) para ativar o chip?","opcao":"Cliente vai ativar sozinho pelo App Minha Vero","proximoNo":2,"diagId":null},{"no":1,"processo":"PROC101","tipo":"Pergunta","texto":"Qual canal o cliente está usando (ou o analista vai usar) para ativar o chip?","opcao":"Cliente vai ativar pela URA (10385, opção 3)","proximoNo":null,"diagId":"D101-URA"},{"no":1,"processo":"PROC101","tipo":"Pergunta","texto":"Qual canal o cliente está usando (ou o analista vai usar) para ativar o chip?","opcao":"Analista vai ativar via NG / MVNO Cloud","proximoNo":3,"diagId":null},{"no":2,"processo":"PROC101","tipo":"Pergunta","texto":"No app, após inserir o ICCID e clicar em Ativar, apareceu a mensagem 'Chip ativado com sucesso'?","opcao":"Sim","proximoNo":null,"diagId":"D101-OK"},{"no":2,"processo":"PROC101","tipo":"Pergunta","texto":"No app, após inserir o ICCID e clicar em Ativar, apareceu a mensagem 'Chip ativado com sucesso'?","opcao":"Não","proximoNo":null,"diagId":"D101-APP-ERRO"},{"no":3,"processo":"PROC101","tipo":"Pergunta","texto":"Ao inserir o número do contrato e o ICCID no MVNO Cloud (ou provisionar pelo NG), a ativação foi concluída?","opcao":"Sim","proximoNo":null,"diagId":"D101-OK"},{"no":3,"processo":"PROC101","tipo":"Pergunta","texto":"Ao inserir o número do contrato e o ICCID no MVNO Cloud (ou provisionar pelo NG), a ativação foi concluída?","opcao":"Não","proximoNo":null,"diagId":"D101-CHAMADO"},{"no":1,"processo":"PROC102","tipo":"Pergunta","texto":"O cliente deseja bloquear ou desbloquear o chip?","opcao":"Bloquear","proximoNo":2,"diagId":null},{"no":1,"processo":"PROC102","tipo":"Pergunta","texto":"O cliente deseja bloquear ou desbloquear o chip?","opcao":"Desbloquear","proximoNo":null,"diagId":"D102-DESBLOQ"},{"no":2,"processo":"PROC102","tipo":"Pergunta","texto":"Qual o motivo do bloqueio?","opcao":"Roubo","proximoNo":null,"diagId":"D102-BLOQ"},{"no":2,"processo":"PROC102","tipo":"Pergunta","texto":"Qual o motivo do bloqueio?","opcao":"Perda","proximoNo":null,"diagId":"D102-BLOQ"},{"no":2,"processo":"PROC102","tipo":"Pergunta","texto":"Qual o motivo do bloqueio?","opcao":"Uso indevido","proximoNo":null,"diagId":"D102-BLOQ"},{"no":2,"processo":"PROC102","tipo":"Pergunta","texto":"Qual o motivo do bloqueio?","opcao":"Inadimplência","proximoNo":null,"diagId":"D102-BLOQ"},{"no":2,"processo":"PROC102","tipo":"Pergunta","texto":"Qual o motivo do bloqueio?","opcao":"Suspensão a pedido do cliente","proximoNo":null,"diagId":"D102-BLOQ"},{"no":1,"processo":"PROC103","tipo":"Pergunta","texto":"Já foi feito o checklist básico? (endereço com falha identificado, APN configurada, busca manual de rede 4G/LTE, aparelho reiniciado, SIM testado em outro slot/aparelho)","opcao":"Não, ainda não fiz o checklist","proximoNo":null,"diagId":"D103-CHECKLIST"},{"no":1,"processo":"PROC103","tipo":"Pergunta","texto":"Já foi feito o checklist básico? (endereço com falha identificado, APN configurada, busca manual de rede 4G/LTE, aparelho reiniciado, SIM testado em outro slot/aparelho)","opcao":"Sim, já fiz e o cliente continua sem dados","proximoNo":2,"diagId":null},{"no":2,"processo":"PROC103","tipo":"Pergunta","texto":"Qual o sistema operacional do aparelho?","opcao":"iOS","proximoNo":null,"diagId":"D103-IOS"},{"no":2,"processo":"PROC103","tipo":"Pergunta","texto":"Qual o sistema operacional do aparelho?","opcao":"Android","proximoNo":null,"diagId":"D103-ANDROID"},{"no":1,"processo":"PROC104","tipo":"Pergunta","texto":"Já foi consultado o mapa de cobertura da Tim para o endereço do cliente?","opcao":"Não","proximoNo":null,"diagId":"D104-MAPA"},{"no":1,"processo":"PROC104","tipo":"Pergunta","texto":"Já foi consultado o mapa de cobertura da Tim para o endereço do cliente?","opcao":"Sim, há cobertura mas o chip continua sem sinal","proximoNo":2,"diagId":null},{"no":2,"processo":"PROC104","tipo":"Pergunta","texto":"Qual o sistema operacional do aparelho?","opcao":"iOS","proximoNo":null,"diagId":"D104-IOS"},{"no":2,"processo":"PROC104","tipo":"Pergunta","texto":"Qual o sistema operacional do aparelho?","opcao":"Android","proximoNo":null,"diagId":"D104-ANDROID"},{"no":1,"processo":"PROC105","tipo":"Pergunta","texto":"O chip realiza e recebe SMS e tem dados móveis normalmente, só a voz está com problema?","opcao":"Sim, só chamadas de voz","proximoNo":null,"diagId":"D105-VOZ"},{"no":1,"processo":"PROC105","tipo":"Pergunta","texto":"O chip realiza e recebe SMS e tem dados móveis normalmente, só a voz está com problema?","opcao":"Não, é chip totalmente sem sinal","proximoNo":null,"diagId":"D105-SEMSINAL"},{"no":1,"processo":"PROC106","tipo":"Pergunta","texto":"O cliente não consegue enviar SMS ou não está recebendo SMS?","opcao":"Não consegue enviar","proximoNo":2,"diagId":null},{"no":1,"processo":"PROC106","tipo":"Pergunta","texto":"O cliente não consegue enviar SMS ou não está recebendo SMS?","opcao":"Não está recebendo","proximoNo":null,"diagId":"D106-NAORECEBE"},{"no":2,"processo":"PROC106","tipo":"Pergunta","texto":"O centro de mensagens (SMSC) está configurado para +5511951859955?","opcao":"Não sei / não verificado","proximoNo":null,"diagId":"D106-CENTRO"},{"no":2,"processo":"PROC106","tipo":"Pergunta","texto":"O centro de mensagens (SMSC) está configurado para +5511951859955?","opcao":"Sim, está configurado e mesmo assim não envia","proximoNo":null,"diagId":"D106-TRANSFERIR"},{"no":1,"processo":"PROC107","tipo":"Pergunta","texto":"Qual a necessidade do cliente sobre a portabilidade?","opcao":"Consultar o status da portabilidade","proximoNo":2,"diagId":null},{"no":1,"processo":"PROC107","tipo":"Pergunta","texto":"Qual a necessidade do cliente sobre a portabilidade?","opcao":"Cancelar a portabilidade em andamento","proximoNo":3,"diagId":null},{"no":1,"processo":"PROC107","tipo":"Pergunta","texto":"Qual a necessidade do cliente sobre a portabilidade?","opcao":"Entender as regras antes de solicitar","proximoNo":null,"diagId":"D107-REGRAS"},{"no":2,"processo":"PROC107","tipo":"Pergunta","texto":"Qual o status apresentado no MVNO Cloud/Adapter/NG?","opcao":"Status 0 a 2 — aguardando instalação, envio ao conector ou falha ao conectar","proximoNo":null,"diagId":"D107-ST-INICIO"},{"no":2,"processo":"PROC107","tipo":"Pergunta","texto":"Qual o status apresentado no MVNO Cloud/Adapter/NG?","opcao":"Status 3 a 5 — aguardando SPG, registrado ou aguardando autorização","proximoNo":null,"diagId":"D107-ST-ANDAMENTO"},{"no":2,"processo":"PROC107","tipo":"Pergunta","texto":"Qual o status apresentado no MVNO Cloud/Adapter/NG?","opcao":"Status 6 — Bilhete Ativo (concluída)","proximoNo":null,"diagId":"D107-ST-CONCLUIDA"},{"no":2,"processo":"PROC107","tipo":"Pergunta","texto":"Qual o status apresentado no MVNO Cloud/Adapter/NG?","opcao":"Status 8 — Bilhete Cancelado","proximoNo":null,"diagId":"D107-ST-CANCELADA"},{"no":3,"processo":"PROC107","tipo":"Pergunta","texto":"A portabilidade está em um status entre 1 e 5, e faltam mais de 24h para a data agendada de conclusão?","opcao":"Sim","proximoNo":null,"diagId":"D107-CANCELA-OK"},{"no":3,"processo":"PROC107","tipo":"Pergunta","texto":"A portabilidade está em um status entre 1 e 5, e faltam mais de 24h para a data agendada de conclusão?","opcao":"Não (faltam menos de 24h ou já está concluída)","proximoNo":null,"diagId":"D107-CANCELA-NEGADO"},{"no":1,"processo":"PROC108","tipo":"Pergunta","texto":"O que o cliente precisa?","opcao":"Rastrear o chip que já foi enviado","proximoNo":2,"diagId":null},{"no":1,"processo":"PROC108","tipo":"Pergunta","texto":"O que o cliente precisa?","opcao":"Solicitar o envio de um novo chip","proximoNo":null,"diagId":"D108-ENVIO"},{"no":2,"processo":"PROC108","tipo":"Pergunta","texto":"Por qual canal o cliente prefere rastrear?","opcao":"Site dos Correios","proximoNo":null,"diagId":"D108-CORREIOS"},{"no":2,"processo":"PROC108","tipo":"Pergunta","texto":"Por qual canal o cliente prefere rastrear?","opcao":"App Minha Vero","proximoNo":null,"diagId":"D108-APP"},{"no":2,"processo":"PROC108","tipo":"Pergunta","texto":"Por qual canal o cliente prefere rastrear?","opcao":"Área logada (site)","proximoNo":null,"diagId":"D108-AREALOGADA"},{"no":1,"processo":"PROC109","tipo":"Pergunta","texto":"Quem vai consultar o consumo?","opcao":"Analista (via MVNO Cloud)","proximoNo":null,"diagId":"D109-ANALISTA"},{"no":1,"processo":"PROC109","tipo":"Pergunta","texto":"Quem vai consultar o consumo?","opcao":"O próprio cliente (orientar pelo App)","proximoNo":null,"diagId":"D109-APP"},{"no":1,"processo":"PROC110","tipo":"Pergunta","texto":"O cliente possui o plano Vero Controle?","opcao":"Não","proximoNo":null,"diagId":"D110-NAOELEGIVEL"},{"no":1,"processo":"PROC110","tipo":"Pergunta","texto":"O cliente possui o plano Vero Controle?","opcao":"Sim","proximoNo":2,"diagId":null},{"no":2,"processo":"PROC110","tipo":"Pergunta","texto":"O cliente quer comprar o pacote ou está reportando um problema após a compra?","opcao":"Quer comprar","proximoNo":null,"diagId":"D110-VENDA"},{"no":2,"processo":"PROC110","tipo":"Pergunta","texto":"O cliente quer comprar o pacote ou está reportando um problema após a compra?","opcao":"Problema após a compra","proximoNo":3,"diagId":null},{"no":3,"processo":"PROC110","tipo":"Pergunta","texto":"Existe algum débito em aberto no contrato do cliente?","opcao":"Sim","proximoNo":null,"diagId":"D110-DEBITO"},{"no":3,"processo":"PROC110","tipo":"Pergunta","texto":"Existe algum débito em aberto no contrato do cliente?","opcao":"Não","proximoNo":null,"diagId":"D110-NOC"},{"no":1,"processo":"PROC111","tipo":"Pergunta","texto":"Qual o tipo de solicitação?","opcao":"Liberar/receber chamada a cobrar","proximoNo":null,"diagId":"D111-ACOBRAR"},{"no":1,"processo":"PROC111","tipo":"Pergunta","texto":"Qual o tipo de solicitação?","opcao":"Falha em chamada internacional","proximoNo":null,"diagId":"D111-INTERNACIONAL"},{"no":1,"processo":"PROC112","tipo":"Pergunta","texto":"O cliente está perguntando sobre uso do chip fora do Brasil (Roaming Internacional)?","opcao":"Sim","proximoNo":null,"diagId":"D112-ROAMING"},{"no":1,"processo":"PROC113","tipo":"Pergunta","texto":"Antes de tudo: já foi validado se não há nenhuma MASSIVA em andamento (com o supervisor/grupos internos)?","opcao":"Não","proximoNo":null,"diagId":"D113-MASSIVA"},{"no":1,"processo":"PROC113","tipo":"Pergunta","texto":"Antes de tudo: já foi validado se não há nenhuma MASSIVA em andamento (com o supervisor/grupos internos)?","opcao":"Sim, sem massiva no momento","proximoNo":2,"diagId":null},{"no":2,"processo":"PROC113","tipo":"Pergunta","texto":"Qual o tipo de falha relatada?","opcao":"Não realiza e/ou não recebe chamadas","proximoNo":null,"diagId":"D113-NAOREALIZA"},{"no":2,"processo":"PROC113","tipo":"Pergunta","texto":"Qual o tipo de falha relatada?","opcao":"Chamada muda ou falha de DTMF","proximoNo":null,"diagId":"D113-MUDA"},{"no":2,"processo":"PROC113","tipo":"Pergunta","texto":"Qual o tipo de falha relatada?","opcao":"Chamadas picotando ou voz robotizada","proximoNo":null,"diagId":"D113-PICOTADA"},{"no":2,"processo":"PROC113","tipo":"Pergunta","texto":"Qual o tipo de falha relatada?","opcao":"Chamada internacional ou a cobrar bloqueada","proximoNo":null,"diagId":"D113-INTERNACIONAL"},{"no":1,"processo":"PROC114","tipo":"Pergunta","texto":"O que precisa ser feito?","opcao":"Consultar se o número já foi portado para a Vero","proximoNo":null,"diagId":"D114-CONSULTA"},{"no":1,"processo":"PROC114","tipo":"Pergunta","texto":"O que precisa ser feito?","opcao":"Incluir uma linha nova ou portada no contrato","proximoNo":2,"diagId":null},{"no":2,"processo":"PROC114","tipo":"Pergunta","texto":"Já foi verificado se o número não está 'sujo' (cadastrado em outro cliente, pendências na ABR ou no Summit)?","opcao":"Não","proximoNo":null,"diagId":"D114-VERIFICACAO"},{"no":2,"processo":"PROC114","tipo":"Pergunta","texto":"Já foi verificado se o número não está 'sujo' (cadastrado em outro cliente, pendências na ABR ou no Summit)?","opcao":"Sim, já verificado","proximoNo":null,"diagId":"D114-INCLUSAO"}],"DIAGNOSTICOS":{"D101-URA":"Orientar ativação via URA","D101-OK":"Ativação concluída com sucesso","D101-APP-ERRO":"Falha na ativação via App","D101-CHAMADO":"Erro de ativação — abrir chamado Telecom","D102-BLOQ":"Bloqueio de SIM Card realizado","D102-DESBLOQ":"Desbloqueio de SIM Card realizado","D103-CHECKLIST":"Executar checklist antes de prosseguir","D103-IOS":"Configuração de APN — iOS","D103-ANDROID":"Configuração de APN — Android","D104-MAPA":"Consultar mapa de cobertura","D104-IOS":"Busca manual de rede — iOS","D104-ANDROID":"Busca manual de rede — Android","D105-VOZ":"Coletar dados e transferir para Telefonia Móvel","D105-SEMSINAL":"Encaminhar para o processo Sem Sinal / Busca de Rede","D106-CENTRO":"Verificar/configurar centro de mensagens (SMSC)","D106-NAORECEBE":"Coletar dados e transferir para Telefonia Móvel","D106-TRANSFERIR":"Transferir para Telefonia Móvel","D107-REGRAS":"Orientar regras de elegibilidade da portabilidade","D107-ST-INICIO":"Status inicial — aguardar ou orientar contato com a doadora","D107-ST-ANDAMENTO":"Status em andamento — verificar conflitos","D107-ST-CONCLUIDA":"Portabilidade concluída","D107-ST-CANCELADA":"Portabilidade cancelada — reenviar SMS se necessário","D107-CANCELA-OK":"Cancelamento de portabilidade autorizado","D107-CANCELA-NEGADO":"Cancelamento não é mais possível","D108-ENVIO":"Abrir chamado de envio de chip","D108-CORREIOS":"Rastreio via site dos Correios","D108-APP":"Rastreio via App Minha Vero","D108-AREALOGADA":"Rastreio via área logada (site)","D109-ANALISTA":"Consultar consumo no MVNO Cloud","D109-APP":"Orientar consulta pelo App Minha Vero","D110-NAOELEGIVEL":"Pacote adicional não disponível para este plano","D110-VENDA":"Realizar venda do pacote adicional","D110-DEBITO":"Resolver pendência financeira antes de liberar","D110-NOC":"Direcionar ao NOC","D111-ACOBRAR":"Liberar/tratar chamada a cobrar","D111-INTERNACIONAL":"Falha em chamada internacional","D112-ROAMING":"Informar indisponibilidade temporária do Roaming","D113-MASSIVA":"Verificar massiva antes de prosseguir","D113-NAOREALIZA":"Coletar dados e transferir para CSU","D113-MUDA":"Coletar dados — chamada muda / falha DTMF","D113-PICOTADA":"Coletar dados — chamada picotando/robotizada","D113-INTERNACIONAL":"Liberação de chamada internacional/a cobrar (fixa)","D114-CONSULTA":"Consulta de número — ABR Telecom","D114-VERIFICACAO":"Verificar número antes da inclusão","D114-INCLUSAO":"Inclusão de linha fixa no contrato"},"PROCEDIMENTOS":{"D101-URA":{"oQueAconteceu":"Cliente prefere ativar sozinho.","procedimento":"Orientar o cliente a discar 10385 e selecionar a opção 3 para ativação autônoma do chip.","resultado":"Chip ativado pelo próprio cliente via URA."},"D101-OK":{"oQueAconteceu":"Chip ativado com sucesso pelo canal utilizado.","procedimento":"Confirmar com o cliente o funcionamento de ligação e dados, e finalizar o atendimento.","resultado":"Linha ativa e funcional."},"D101-APP-ERRO":{"oQueAconteceu":"Cliente não conseguiu ativar pelo App Minha Vero.","procedimento":"Confirmar se o ICCID foi digitado corretamente (sequência gravada no chip ou no cartão). Se o ICCID estiver correto e o erro persistir, realizar a ativação via NG/MVNO Cloud pelo analista.","resultado":"Chip ativado ou identificado o motivo da falha."},"D101-CHAMADO":{"oQueAconteceu":"Ativação não foi concluída mesmo pelo NG/MVNO Cloud.","procedimento":"Abrir chamado de Telecom pelo MVNO Cloud, informando número do contrato, ICCID e o erro apresentado.","resultado":"Time técnico realiza a ativação/correção."},"D102-BLOQ":{"oQueAconteceu":"Cliente solicitou o bloqueio do chip.","procedimento":"No MVNO Cloud (Adapter/NG), inserir o número do contrato — o número do SIM aparece automaticamente — e selecionar o motivo do bloqueio. Em casos de bloqueio, corrigir o faturamento.","resultado":"Chip bloqueado e faturamento ajustado."},"D102-DESBLOQ":{"oQueAconteceu":"Contrato estava bloqueado (Bloqueio ou Bloqueio Parcial) e precisa ser reativado.","procedimento":"No MVNO Cloud (Adapter/NG), inserir o número do contrato — o número do SIM aparece automaticamente — e clicar em Desbloquear.","resultado":"Chip desbloqueado e funcional."},"D103-CHECKLIST":{"oQueAconteceu":"Checklist inicial ainda não realizado.","procedimento":"Confirmar com o cliente: endereço onde ocorre a falha, se a APN está configurada, se foi feita busca manual de rede forçando 4G/LTE, se o aparelho foi reiniciado, e testar o SIM em outro slot e em outro aparelho.","resultado":"Diagnóstico do problema com base no checklist. Repita o diagnóstico após concluir."},"D103-IOS":{"oQueAconteceu":"Cliente sem dados móveis em aparelho iOS.","procedimento":"Em 99% dos casos a configuração é automática: Ajustes > Celular ou Operadora > Seleção de rede > desmarcar seleção automática > buscar redes próximas > selecionar a rede. Se não funcionar: Ajustes > Celular > Rede de Dados Celulares > Nome (Vero), APN (a85) > salvar.","resultado":"Dados móveis restabelecidos."},"D103-ANDROID":{"oQueAconteceu":"Cliente sem dados móveis em aparelho Android.","procedimento":"Configurações > Rede e Internet (ou Conexões) > Rede Móvel > Pontos de Acesso (selecionar o chip) > Avançado > adicionar novo (+) > Nome (Vero), APN (a85) > salvar. Selecionar a APN criada. Se não funcionar de imediato, ativar e desativar o modo avião.","resultado":"Dados móveis restabelecidos."},"D104-MAPA":{"oQueAconteceu":"Ainda não verificada a cobertura na região do cliente.","procedimento":"Acessar o mapa de cobertura da Tim (4G para internet, 3G/2G para voz) e confirmar cobertura no endereço informado. A qualidade pode variar conforme condições geográficas, meteorológicas e volume de clientes na região.","resultado":"Cobertura confirmada ou identificada área sem cobertura."},"D104-IOS":{"oQueAconteceu":"Há cobertura na região, mas o chip está sem sinal.","procedimento":"Ajustes > Celular ou Operadora > Seleção de Rede > desmarcar seleção automática > aguardar a busca das redes próximas > selecionar a rede manualmente.","resultado":"Sinal restabelecido. Se não funcionar, transferir para Telefonia Móvel (N2), registrando os testes já realizados."},"D104-ANDROID":{"oQueAconteceu":"Há cobertura na região, mas o chip está sem sinal.","procedimento":"Configurações > Rede e Internet (ou Conexões) > Rede Móvel > selecionar o chip > Configurações de Rede/Avançado > desativar a busca automática, selecionar a rede manualmente e, se necessário, reativar a busca automática depois.","resultado":"Sinal restabelecido. Se não funcionar, transferir para Telefonia Móvel (N2), registrando os testes já realizados."},"D105-VOZ":{"oQueAconteceu":"Cliente não realiza e/ou não recebe chamadas.","procedimento":"Coletar: número de origem, número de destino, qual erro/áudio retorna (número não existe, serviço indisponível, sinal de ocupado) e data/hora dos testes. Após registrar os testes, transferir a ligação para o time de Telefonia Móvel (fila de VOZ).","resultado":"Chamado/transferência registrada com todos os dados coletados para análise em N2."},"D105-SEMSINAL":{"oQueAconteceu":"Chip totalmente sem sinal, não apenas falha de voz.","procedimento":"Seguir o processo 'Sem Sinal / Busca de Rede' (checklist de cobertura, reinício, teste de SIM em outro aparelho, busca manual de rede).","resultado":"Diagnóstico direcionado ao processo correto."},"D106-CENTRO":{"oQueAconteceu":"SMS não está sendo enviado.","procedimento":"Orientar o cliente: ícone de Mensagens > três pontos (canto superior direito) > Configurações > Mais configurações > SMS > Centro de mensagens > preencher +5511951859955. Alternativa: no app Telefone, discar ##4636## > Informações do telefone > localizar campo SMSC > atualizar para +5511951859955.","resultado":"SMS voltando a ser enviado normalmente."},"D106-NAORECEBE":{"oQueAconteceu":"Cliente não está recebendo SMS.","procedimento":"Coletar: número de origem, número de destino, nome do app (caso seja SMS A2P), qual erro retorna ao enviar e data/hora dos testes. Atenção: não há suporte a MMS (mensagens com imagem/som). Transferir para Telefonia Móvel registrando os testes.","resultado":"Chamado/transferência registrada com os dados coletados."},"D106-TRANSFERIR":{"oQueAconteceu":"Centro de mensagens já configurado corretamente e SMS continua falhando.","procedimento":"Registrar os testes já realizados (centro de mensagens conferido) e transferir a ligação para o time de Telefonia Móvel.","resultado":"Chamado/transferência registrada."},"D107-REGRAS":{"oQueAconteceu":"Cliente com dúvidas antes de solicitar a portabilidade.","procedimento":"Explicar as regras: a linha a ser portada precisa estar ativa (não pode ser número provisório); o titular deve ser o mesmo em ambas as operadoras (CPF-CPF ou CNPJ-CNPJ); não pode haver saldo devedor em nenhuma das operadoras; não pode haver outra portabilidade em andamento para o mesmo número; não é possível portar número fixo para móvel (e vice-versa); o número não pode estar vago na operadora doadora.","resultado":"Cliente orientado sobre os pré-requisitos."},"D107-ST-INICIO":{"oQueAconteceu":"Portabilidade nos primeiros status (0-2).","procedimento":"Status 0/1: orientar o cliente a aguardar — o SMS de aceite chega em até 1h após o início do bilhete. Status 2 (Falha ao Conectar): pode ser portabilidade de número vago ou número inativo na doadora — orientar o cliente a contatar a operadora antiga para validar.","resultado":"Cliente orientado sobre o andamento."},"D107-ST-ANDAMENTO":{"oQueAconteceu":"Portabilidade nos status 3 a 5.","procedimento":"Status 3: aguardar mudança de status. Status 4: possíveis conflitos — CPF inválido ou não correspondente ao titular, tipo de cliente divergente (PF/PJ), conflito por falta de resposta ao SMS, ou número inativo na doadora — consultar o motivo do conflito e orientar o cliente conforme o caso. Status 5: aceita, aguardando data agendada.","resultado":"Conflito identificado e cliente orientado, ou aguardo confirmado."},"D107-ST-CONCLUIDA":{"oQueAconteceu":"Bilhete no status 6 (Ativo).","procedimento":"Confirmar ao cliente que a portabilidade foi concluída com sucesso e que a linha Vero já está ativa com o número portado.","resultado":"Cliente confirmado com a portabilidade concluída."},"D107-ST-CANCELADA":{"oQueAconteceu":"Bilhete no status 8 (Cancelado).","procedimento":"Verificar o motivo do cancelamento com o cliente. Se for elegível, reenviar o SMS de portabilidade para reiniciar o processo.","resultado":"Novo SMS de portabilidade reenviado, se aplicável."},"D107-CANCELA-OK":{"oQueAconteceu":"Portabilidade em andamento, dentro do prazo para cancelamento.","procedimento":"No MVNO Cloud/Adapter/NG, inserir o número do contrato (o SIM aparece automaticamente) > Consulta de Portabilidade > Alterar Portabilidade > Cancelar Portabilidade > confirmar. Esse procedimento só pode ser feito com o titular em linha.","resultado":"Portabilidade cancelada com sucesso."},"D107-CANCELA-NEGADO":{"oQueAconteceu":"Prazo de 24h antes da conclusão já foi ultrapassado, ou a portabilidade já foi concluída.","procedimento":"Orientar o cliente de que o cancelamento só pode ser solicitado até 24h antes da data agendada de portabilidade, e que a solicitação não pode mais ser realizada neste momento.","resultado":"Cliente orientado sobre a impossibilidade do cancelamento."},"D108-ENVIO":{"oQueAconteceu":"Cliente solicitou novo chip. Chips não podem ser retirados em loja.","procedimento":"Abrir chamado via MVNO Cloud informando o número do contrato e o endereço de instalação para envio. Antes de direcionar, realizar o bloqueio/gerenciamento normal da linha (exceto quando for linha nova, sem chip anterior).","resultado":"Chamado de envio registrado."},"D108-CORREIOS":{"oQueAconteceu":"Cliente quer rastrear o chip enviado.","procedimento":"Orientar o cliente a acessar o site de rastreamento dos Correios com o código de rastreio informado no envio.","resultado":"Cliente com a localização atualizada do chip."},"D108-APP":{"oQueAconteceu":"Cliente quer rastrear o chip pelo aplicativo.","procedimento":"Orientar o cliente a acessar o App Minha Vero > aba 'Rastrear chip' > aba 'Celular'.","resultado":"Cliente consegue visualizar o status de entrega no app."},"D108-AREALOGADA":{"oQueAconteceu":"Cliente quer rastrear o chip pela área logada.","procedimento":"Orientar o cliente a acessar a área logada no site Vero e clicar na aba 'Rastrear chip'.","resultado":"Cliente consegue visualizar o status de entrega no site."},"D109-ANALISTA":{"oQueAconteceu":"Necessário verificar consumo de dados, ligações e SMS do cliente.","procedimento":"No MVNO Cloud, acessar Relatórios > Consumo. Informar o número do contrato MVNO e o período desejado. Clicar em Pesquisar > Detalhes para visualizar ligações, SMS e dados utilizados.","resultado":"Consumo do cliente visualizado e informado."},"D109-APP":{"oQueAconteceu":"Cliente quer acompanhar o próprio consumo.","procedimento":"Orientar o cliente a acessar o menu 'Telefonia' > 'Consultar extratos' no App Minha Vero, onde pode visualizar consumo de dados, valores, SMS enviados, entre outros.","resultado":"Cliente orientado a consultar de forma autônoma."},"D110-NAOELEGIVEL":{"oQueAconteceu":"Cliente não possui o plano Vero Controle.","procedimento":"Informar ao cliente que o Pacote Adicional (3GB e 6GB) está disponível apenas para clientes do plano Vero Controle.","resultado":"Cliente orientado sobre a elegibilidade."},"D110-VENDA":{"oQueAconteceu":"Cliente quer comprar pacote adicional de dados.","procedimento":"No NG, acessar o contrato > Informações > ⋮ (três pontinhos) > Vendas Avulsas > Nova Venda > selecionar o produto (Pacote Adicional 3GB = R$10 ou 6GB = R$18) > Salvar. O pacote fica disponível em até 1 hora após a contratação; validade de 30 dias; é acumulativo; cobrado na fatura vigente ou próxima janela de faturamento; cancelamento após adquirido gera cobrança integral do pacote.","resultado":"Pacote adicional vendido e ativo em até 1h."},"D110-DEBITO":{"oQueAconteceu":"Cliente com débito em aberto reportando problema com o pacote.","procedimento":"Orientar o cliente sobre a pendência financeira, já que ela pode impedir o funcionamento do pacote adicional. Encaminhar para regularização antes de qualquer nova liberação.","resultado":"Pendência identificada e cliente orientado."},"D110-NOC":{"oQueAconteceu":"Cliente sem débito, mas o pacote não caiu no sistema ou apresenta problema de conexão.","procedimento":"Direcionar o atendimento ao NOC para verificação técnica da inclusão do pacote/conexão.","resultado":"Chamado direcionado ao NOC."},"D111-ACOBRAR":{"oQueAconteceu":"Cliente quer liberar recebimento de chamada a cobrar ou relata falha.","procedimento":"Para liberação: coletar o número do assinante que deseja receber as chamadas a cobrar. Para falha no recebimento: coletar número de origem, destino e mensagem de erro. Delegar para a fila de acordo com o produto do cliente (B2C: CEC-VOZ B2C; B2B: CEC-VOZ B2B).","resultado":"Chamado registrado e direcionado à fila correta."},"D111-INTERNACIONAL":{"oQueAconteceu":"Cliente relata falha ao ligar para outro país.","procedimento":"Orientar o formato correto: 0085 + código do país + número. Se a falha persistir, coletar número de origem, número de destino e erro apresentado, e delegar para a fila de Telefonia Móvel.","resultado":"Chamado registrado com os dados coletados."},"D112-ROAMING":{"oQueAconteceu":"Cliente perguntando sobre Roaming Internacional.","procedimento":"Informar que o serviço está em fase de reestruturação e não está disponível no momento. Sugestão de script: 'Estamos em fase de estruturação para disponibilizar a funcionalidade de Roaming em breve! Essa novidade vai trazer ainda mais praticidade para nossos clientes. Assim que estiver disponível, informaremos através dos nossos canais digitais.'","resultado":"Cliente orientado sobre a indisponibilidade temporária."},"D113-MASSIVA":{"oQueAconteceu":"Ainda não confirmado se há incidente massivo em andamento.","procedimento":"Verificar com o supervisor e nos grupos internos se existe alguma MASSIVA em andamento antes de seguir com qualquer tratativa individual — vale para falhas de chamada, indisponibilidade, ou não recebe/não realiza.","resultado":"Massiva descartada ou identificada (nesse caso, seguir orientação específica do incidente)."},"D113-NAOREALIZA":{"oQueAconteceu":"Linha fixa não realiza e/ou não recebe chamadas.","procedimento":"Coletar: número de origem, número de destino, qual erro/áudio retorna (número não existe, serviço indisponível, sinal de ocupado), número do ramal com falha (e se está registrado), data e hora dos testes. Todos os testes devem ser feitos antes de delegar. Se persistir, transferir para o time de telefonia da CSU.","resultado":"Chamado transferido para CSU com os dados coletados."},"D113-MUDA":{"oQueAconteceu":"Chamada fica muda ou o DTMF falha.","procedimento":"Coletar: número de origem, número de destino, se a chamada fica muda na URA ou após atendimento humano, se a falha de DTMF ocorre em um número específico ou em vários, e data/hora dos testes.","resultado":"Dados coletados. Se persistir, transferir para o time de telefonia da CSU."},"D113-PICOTADA":{"oQueAconteceu":"Chamadas picotando ou com voz robotizada.","procedimento":"Coletar: número de origem, número de destino, data/hora de início da falha, se ocorre em um DDD específico, se ocorre com uma operadora específica ou de forma geral, e coletar o CDR da chamada no Veraz, se disponível.","resultado":"Dados coletados. Após validação, se persistir o erro, transferir para o time de telefonia da CSU."},"D113-INTERNACIONAL":{"oQueAconteceu":"Por padrão esses serviços vêm bloqueados; o cliente deve solicitar a liberação.","procedimento":"Para chamada a cobrar: coletar de qual número não está recebendo, mensagem de erro, e confirmar se a falha ocorre sempre com o mesmo número de origem. Para internacional: verificar o formato de discagem do cliente (0085 + código do país + número) e de qual número não consegue completar a chamada. Em ambos os casos, a solicitação de liberação deve ser transferida para o time da CSU.","resultado":"Solicitação transferida para CSU."},"D114-CONSULTA":{"oQueAconteceu":"Cliente ou analista quer confirmar se o número foi portado para a Vero.","procedimento":"Acessar o site de Consulta Número da ABR Telecom e realizar a consulta pelo número de telefone.","resultado":"Confirmação da operadora atual do número."},"D114-VERIFICACAO":{"oQueAconteceu":"Número ainda não verificado antes de adicionar ao contrato.","procedimento":"Verificar o número no NG (se já está cadastrado em outro cliente), na ABR Telecom (se realmente está com a Vero) e no Summit (se a linha tem registro).","resultado":"Número validado nos três sistemas antes de prosseguir com a inclusão."},"D114-INCLUSAO":{"oQueAconteceu":"Número já validado, pronto para inclusão.","procedimento":"Incluir a linha no contrato via NG (nova linha ou portabilidade), preenchendo o formulário com as informações solicitadas. Ao final, abrir chamado no GLPI para o time responsável realizar as configurações necessárias.","resultado":"Linha incluída e chamado de configuração aberto."}},"SISTEMAS":{"D101-APP-ERRO":["NG","MVNO Cloud"],"D101-CHAMADO":["MVNO Cloud"],"D102-BLOQ":["MVNO Cloud","NG","Adapter"],"D102-DESBLOQ":["MVNO Cloud","NG","Adapter"],"D107-CANCELA-OK":["MVNO Cloud","Adapter","NG"],"D108-ENVIO":["MVNO Cloud"],"D109-ANALISTA":["MVNO Cloud"],"D110-VENDA":["NG"],"D114-VERIFICACAO":["NG","Summit"],"D114-INCLUSAO":["NG","GLPI"]},"MATERIAIS":{"D104-MAPA":[{"material":"Mapa de Cobertura Tim","link":"https://www.tim.com.br/para-voce/cobertura-e-roaming/mapa-de-cobertura","obs":"Consulta de cobertura 2G/3G/4G por endereço"}],"D106-CENTRO":[{"material":"Passo a passo Centro de Mensagens","link":"OneNote","obs":"Configuração alternativa por código ##4636##"}],"D108-CORREIOS":[{"material":"Rastreamento Correios","link":"https://www.correios.com.br","obs":"Consulta por código de rastreio"}],"D114-CONSULTA":[{"material":"Consulta ABR Telecom","link":"https://consultanumero.abrtelecom.com.br/consultanumero/consulta/consultaSituacaoAtualCtg","obs":"Consulta de situação atual e histórico de portabilidade"}],"D114-VERIFICACAO":[{"material":"Consulta ABR Telecom","link":"https://consultanumero.abrtelecom.com.br/consultanumero/consulta/consultaSituacaoAtualCtg","obs":"Consulta de situação atual"}]},"SLA":{"D101-CHAMADO":"Chamado de erro técnico do chip — acompanhar retorno do time de Telecom.","D107-ST-CANCELADA":"SMS deve ser respondido em até 24h para confirmar a portabilidade; caso contrário o processo é paralisado.","D108-ENVIO":"Entrega em até 3 dias úteis em grandes municípios e até 8 dias úteis em regiões mais afastadas, via carta registrada. Necessário maior de idade para receber. Até 3 tentativas de entrega; depois disso, disponível nos Correios por até 7 dias úteis."},"ESCALATION_NOTE":"Ponto de atenção: o Suporte N1 não utiliza o sistema Simetra — toda validação é feita pelo sistema MVNO Cloud (com NG e Adapter de apoio). Qualquer demanda de Simetra ou configuração mais avançada deve ser transferida para o time de Telefonia através da transferência de atendimento."};
+
+let STATE = {
+  view: "home",
+  currentProc: null,
+  currentNo: 1,
+  history: [],      // { procId, diagId, timestamp }
+  favorites: [],     // proc ids
+  path: [],          // { pergunta, resposta } trilha de respostas do diagnóstico atual
+};
+
+const ICONS = {
+  "PROC101": "&#128241;", "PROC102": "&#128274;", "PROC103": "&#128246;",
+  "PROC104": "&#128246;", "PROC105": "&#128222;", "PROC106": "&#128172;",
+  "PROC107": "&#8646;", "PROC108": "&#128230;", "PROC109": "&#128203;",
+  "PROC110": "&#128225;", "PROC111": "&#128200;", "PROC112": "&#127758;",
+  "PROC113": "&#9742;", "PROC114": "&#8646;"
+};
+
+function render() {
+  const main = document.getElementById("main");
+  document.querySelectorAll("#sidebar nav a").forEach(a => a.classList.toggle("active", a.dataset.view === STATE.view));
+  if (STATE.view === "home") return renderHome(main);
+  if (STATE.view === "flow") return renderFlow(main);
+  if (STATE.view === "diag") return renderDiag(main);
+  if (STATE.view === "kb") return renderKB(main);
+  if (STATE.view === "diagnosticos") return renderDiagnosticos(main);
+  if (STATE.view === "history") return renderHistory(main);
+  if (STATE.view === "favorites") return renderFavorites(main);
+}
+
+function cardHTML(proc) {
+  return `<div class="proc-card" onclick="startFlow('${proc.id}')">
+    <div class="card-top">
+      <div class="icon-circle">${ICONS[proc.id] || '&#9881;'}</div>
+    </div>
+    <h3>${proc.processo}</h3>
+    <p>${proc.descricao}</p>
+    <div class="start-link">Iniciar diagnóstico &#8594;</div>
+  </div>`;
+}
+
+function renderHome(main) {
+  const procs = DATA.PROCESSOS;
+  main.innerHTML = `
+    <div class="home-header">
+      <div class="greeting">Olá, Renata! &#128075;</div>
+      <h1 class="title">Como podemos te ajudar hoje?</h1>
+      <div class="subtext">Selecione o processo para iniciar o diagnóstico:</div>
+      <img class="hero-logo" src="data:image/png;base64,${LOGO_B64}" alt="Vero" />
+      <svg class="hero-graphic" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="150" cy="80" r="18" fill="#fff"/>
+        <text x="150" y="86" text-anchor="middle" font-size="15" fill="#E6007E">&#128172;</text>
+        <circle cx="278" cy="55" r="18" fill="#fff"/>
+        <text x="278" y="61" text-anchor="middle" font-size="14" fill="#E6007E">&#128222;</text>
+        <circle cx="278" cy="150" r="18" fill="#fff"/>
+        <g transform="translate(278,152)" stroke="#E6007E" stroke-width="1.6" fill="none" stroke-linecap="round">
+          <path d="M-8,-2 A11,11 0 0 1 8,-2"/>
+          <path d="M-5,2 A6.5,6.5 0 0 1 5,2"/>
+          <circle cx="0" cy="6" r="1.4" fill="#E6007E" stroke="none"/>
+        </g>
+        <rect x="176" y="34" width="90" height="152" rx="18" fill="#14121F"/>
+        <rect x="180" y="38" width="82" height="144" rx="14" fill="#FBD7E8"/>
+        <text x="221" y="100" text-anchor="middle" font-size="30" font-weight="800" fill="#E6007E">V</text>
+        <text x="221" y="124" text-anchor="middle" font-size="9.5" font-weight="700" fill="#3A1440">Conectando</text>
+        <text x="221" y="137" text-anchor="middle" font-size="9.5" font-weight="700" fill="#3A1440">pessoas</text>
+        <text x="221" y="150" text-anchor="middle" font-size="9.5" font-weight="700" fill="#3A1440">e possibilidades.</text>
+      </svg>
+    </div>
+
+    <div class="section-title">&#128241; PROCESSOS TELEFONIA MÓVEL</div>
+    <div class="card-grid">${procs.map(cardHTML).join("")}</div>
+
+    <div class="escalation-banner">
+      &#9888;&#65039; <div>${DATA.ESCALATION_NOTE}</div>
+    </div>
+
+    <div class="tip-bar">
+      <div>&#128161; <strong>Dica Vero Expert:</strong> Não encontrou o que precisa? Consulte a Base de Conhecimento.</div>
+      <button onclick="goto('kb')">&#128218; Acessar Base de Conhecimento</button>
+    </div>
+  `;
+}
+
+function startFlow(procId) {
+  STATE.currentProc = procId;
+  STATE.currentNo = 1;
+  STATE.path = [];
+  STATE.view = "flow";
+  render();
+}
+
+function toggleFav(procId) {
+  const i = STATE.favorites.indexOf(procId);
+  if (i >= 0) STATE.favorites.splice(i, 1); else STATE.favorites.push(procId);
+  render();
+}
+
+function getNodeOptions(procId, no) {
+  return DATA.ARVORE.filter(r => r.processo === procId && r.no === no);
+}
+
+function backToCategoria(procId) {
+  STATE.view = "home";
+  render();
+}
+
+function renderFlow(main) {
+  const proc = DATA.PROCESSOS.find(p => p.id === STATE.currentProc);
+  const options = getNodeOptions(STATE.currentProc, STATE.currentNo);
+  if (!options.length) {
+    main.innerHTML = `<div class="empty-state">Fluxo não encontrado.</div>`;
+    return;
+  }
+  main.innerHTML = `
+    <span class="breadcrumb" onclick="backToCategoria('${STATE.currentProc}')">&#8592; Voltar ao início</span>
+    <div class="flow-card">
+      <div class="proc-name">${proc.processo}</div>
+      <h2>${options[0].texto}</h2>
+      ${options.map((o, idx) => `<button class="option-btn" onclick="chooseOption(${idx})">${o.opcao}</button>`).join("")}
+    </div>
+  `;
+  window._currentOptions = options;
+}
+
+function chooseOption(idx) {
+  const opt = window._currentOptions[idx];
+  STATE.path.push({ pergunta: opt.texto, resposta: opt.opcao });
+  if (opt.diagId) {
+    STATE.history.unshift({ procId: STATE.currentProc, diagId: opt.diagId, ts: new Date().toLocaleString('pt-BR') });
+    STATE.currentDiag = opt.diagId;
+    STATE.view = "diag";
+  } else if (opt.proximoNo) {
+    STATE.currentNo = opt.proximoNo;
+    STATE.view = "flow";
+  }
+  render();
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function buildChecklistText() {
+  const did = STATE.currentDiag;
+  const proc = DATA.PROCESSOS.find(p => p.id === STATE.currentProc);
+  const nome = DATA.DIAGNOSTICOS[did];
+  const proc_ = DATA.PROCEDIMENTOS[did];
+  const sistemas = DATA.SISTEMAS[did] || [];
+  const sla = DATA.SLA[did];
+  const analistaEl = document.querySelector('.user-box .name');
+
+  const lines = [];
+  lines.push(`DIAGNÓSTICO — ${proc ? proc.processo : ''}`);
+  lines.push(`Data/Hora: ${new Date().toLocaleString('pt-BR')}`);
+  if (analistaEl) lines.push(`Analista: ${analistaEl.textContent}`);
+  lines.push('');
+
+  if (STATE.path.length) {
+    lines.push('Passo a passo do atendimento:');
+    STATE.path.forEach((p, i) => {
+      lines.push(`${i + 1}. ${p.pergunta}`);
+      lines.push(`   Resposta: ${p.resposta}`);
+    });
+    lines.push('');
+  }
+
+  lines.push(`Diagnóstico: ${nome}`);
+  if (proc_) {
+    lines.push(`O que aconteceu: ${proc_.oQueAconteceu}`);
+    lines.push(`Procedimento realizado: ${proc_.procedimento}`);
+    lines.push(`Resultado: ${proc_.resultado}`);
+  }
+  if (sistemas.length) lines.push(`Sistemas utilizados: ${sistemas.join(', ')}`);
+  if (sla) lines.push(`SLA: ${sla}`);
+
+  return lines.join('\n');
+}
+
+function copyChecklist() {
+  const text = window._checklistText || '';
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  document.body.removeChild(ta);
+  if (ok) {
+    showCopyFeedback();
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(showCopyFeedback).catch(() => {});
+  }
+}
+
+function showCopyFeedback() {
+  const btn = document.getElementById('copyChecklistBtn');
+  if (!btn) return;
+  const original = btn.innerHTML;
+  btn.innerHTML = '&#10003; Copiado!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
+}
+
+function renderDiag(main) {
+  const did = STATE.currentDiag;
+  const proc = DATA.PROCESSOS.find(p => p.id === STATE.currentProc);
+  const nome = DATA.DIAGNOSTICOS[did];
+  const proc_ = DATA.PROCEDIMENTOS[did];
+  const sistemas = DATA.SISTEMAS[did] || [];
+  const materiais = DATA.MATERIAIS[did] || [];
+  const sla = DATA.SLA[did];
+
+  const checklistText = buildChecklistText();
+  window._checklistText = checklistText;
+
+  main.innerHTML = `
+    <span class="breadcrumb" onclick="backToCategoria('${STATE.currentProc}')">&#8592; Voltar ao início</span>
+    <div class="diag-card">
+      <div class="badge">${proc ? proc.processo : ''}</div>
+      <h2>${nome}</h2>
+      ${proc_ ? `
+        <div class="diag-block"><div class="label">O que aconteceu</div><div class="value">${proc_.oQueAconteceu}</div></div>
+        <div class="diag-block"><div class="label">Procedimento</div><div class="value">${proc_.procedimento}</div></div>
+        <div class="diag-block"><div class="label">Resultado esperado</div><div class="value">${proc_.resultado}</div></div>
+      ` : ''}
+      ${sistemas.length ? `<div class="diag-block"><div class="label">Sistemas utilizados</div><div class="chip-row">${sistemas.map(s=>`<span class="chip">${s}</span>`).join("")}</div></div>` : ''}
+      ${materiais.length ? `<div class="diag-block"><div class="label">Materiais de apoio</div>${materiais.map(m=>`<a class="mat-link" href="${m.link}" target="_blank">${m.material}${m.obs ? ' — ' + m.obs : ''}</a>`).join("")}</div>` : ''}
+      ${sla ? `<div class="diag-block"><div class="label">SLA</div><div class="sla-box">${sla}</div></div>` : ''}
+
+      <div class="diag-block">
+        <div class="checklist-box">
+          <div class="checklist-box-header">
+            <div class="label">&#128203; Checklist do atendimento (copiar para o CRM)</div>
+            <button class="btn-copy" id="copyChecklistBtn" onclick="copyChecklist()">&#128203; Copiar checklist</button>
+          </div>
+          <pre class="checklist-pre">${escapeHtml(checklistText)}</pre>
+        </div>
+      </div>
+
+      <div class="diag-actions">
+        <button class="btn-primary" onclick="backToCategoria('${STATE.currentProc}')">Finalizar atendimento</button>
+        <button class="btn-secondary" onclick="startFlow('${STATE.currentProc}')">Refazer diagnóstico</button>
+        <button class="btn-secondary" onclick="toggleFav('${STATE.currentProc}')">${STATE.favorites.includes(STATE.currentProc) ? '&#9733; Favoritado' : '&#9734; Favoritar processo'}</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderDiagnosticos(main) {
+  main.innerHTML = `
+    <h1 class="title">Diagnósticos</h1>
+    <div class="subtext">Todos os diagnósticos já mapeados no Suporte N1, organizados por processo.</div>
+  `;
+  DATA.PROCESSOS.forEach(proc => {
+    const rows = DATA.ARVORE.filter(r => r.processo === proc.id && r.diagId);
+    const seen = new Set();
+    const diags = [];
+    rows.forEach(r => { if (!seen.has(r.diagId)) { seen.add(r.diagId); diags.push(r.diagId); } });
+    if (!diags.length) return;
+    const block = document.createElement("div");
+    block.innerHTML = `<div class="section-title">${proc.processo}</div>`;
+    const list = document.createElement("div");
+    diags.forEach(did => {
+      const item = document.createElement("div");
+      item.className = "kb-item";
+      item.innerHTML = `<div class="kb-proc">${proc.categoria}</div><div class="kb-title">${DATA.DIAGNOSTICOS[did]}</div>`;
+      item.onclick = () => openDiagDirect(did, proc.id);
+      list.appendChild(item);
+    });
+    block.appendChild(list);
+    main.appendChild(block);
+  });
+}
+
+function renderKB(main) {
+  main.innerHTML = `
+    <h1 class="title">Base de Conhecimento</h1>
+    <div class="subtext">Busque por processo, sistema ou diagnóstico.</div>
+    <input class="kb-search" id="kbSearch" placeholder="Buscar (ex: APN, portabilidade, bloqueio...)" oninput="filterKB()">
+    <div id="kbList"></div>
+  `;
+  filterKB();
+}
+
+function filterKB() {
+  const q = (document.getElementById("kbSearch")?.value || "").toLowerCase();
+  const list = document.getElementById("kbList");
+  const items = [];
+  Object.entries(DATA.DIAGNOSTICOS).forEach(([did, nome]) => {
+    const row = DATA.ARVORE.find(r => r.diagId === did);
+    const proc = row ? DATA.PROCESSOS.find(p => p.id === row.processo) : null;
+    const haystack = (nome + " " + (proc ? proc.processo + " " + proc.keyword : "")).toLowerCase();
+    if (!q || haystack.includes(q)) items.push({ did, nome, proc });
+  });
+  if (!items.length) { list.innerHTML = `<div class="empty-state">Nenhum resultado encontrado.</div>`; return; }
+  list.innerHTML = items.map(it => `
+    <div class="kb-item" onclick="openDiagDirect('${it.did}', '${it.proc ? it.proc.id : ''}')">
+      <div class="kb-proc">${it.proc ? it.proc.processo : ''}</div>
+      <div class="kb-title">${it.nome}</div>
+    </div>
+  `).join("");
+}
+
+function openDiagDirect(did, procId) {
+  STATE.currentProc = procId;
+  STATE.currentDiag = did;
+  STATE.path = [];
+  STATE.history.unshift({ procId, diagId: did, ts: new Date().toLocaleString('pt-BR') });
+  STATE.view = "diag";
+  render();
+}
+
+function renderHistory(main) {
+  main.innerHTML = `<h1 class="title">Histórico</h1><div class="subtext">Últimos diagnósticos consultados nesta sessão.</div>`;
+  if (!STATE.history.length) {
+    main.innerHTML += `<div class="empty-state">Nenhum diagnóstico consultado ainda.</div>`;
+    return;
+  }
+  const list = document.createElement("div");
+  STATE.history.forEach(h => {
+    const proc = DATA.PROCESSOS.find(p => p.id === h.procId);
+    const div = document.createElement("div");
+    div.className = "kb-item";
+    div.innerHTML = `<div class="kb-proc">${proc ? proc.processo : ''} — ${h.ts}</div><div class="kb-title">${DATA.DIAGNOSTICOS[h.diagId]}</div>`;
+    div.onclick = () => openDiagDirect(h.diagId, h.procId);
+    list.appendChild(div);
+  });
+  main.appendChild(list);
+}
+
+function renderFavorites(main) {
+  const favs = DATA.PROCESSOS.filter(p => STATE.favorites.includes(p.id));
+  main.innerHTML = `<h1 class="title">Favoritos</h1><div class="subtext">Processos marcados com estrela.</div>`;
+  if (!favs.length) {
+    main.innerHTML += `<div class="empty-state">Você ainda não marcou nenhum processo como favorito.</div>`;
+    return;
+  }
+  main.innerHTML += `<div class="card-grid">${favs.map(cardHTML).join("")}</div>`;
+}
+
+function goto(view) { STATE.view = view; render(); }
+
+document.querySelectorAll("#sidebar nav a").forEach(a => {
+  a.addEventListener("click", () => goto(a.dataset.view));
+});
+
+render();
+</script>
+</body>
+</html>
